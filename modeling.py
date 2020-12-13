@@ -171,6 +171,7 @@ class BertModel(object):
         with tf.variable_scope(scope, default_name="bert"):
             with tf.variable_scope("embeddings"):
                 # Perform embedding lookup on the word ids.
+                # 经典的embedding的方式
                 (self.embedding_output, self.embedding_table) = embedding_lookup(
                     input_ids=input_ids,
                     vocab_size=config.vocab_size,
@@ -181,6 +182,9 @@ class BertModel(object):
 
                 # Add positional embeddings and token type embeddings, then layer
                 # normalize and perform dropout.
+                # 先把token_type_ids的embedding结果加到上一步的输出中，再把positional_embedding加上
+                # positional_embedding是直接随机了一组[seq_len,768]然后广播的往前面的结果加
+                # 结论是  self.embedding_output = emb(input_ids) + emb(token_type_ids) + positional_emb
                 self.embedding_output = embedding_postprocessor(
                     input_tensor=self.embedding_output,
                     use_token_type=True,
@@ -215,7 +219,7 @@ class BertModel(object):
                     initializer_range=config.initializer_range,
                     do_return_all_layers=True)
 
-            self.sequence_output = self.all_encoder_layers[-1]
+            self.sequence_output = self.all_encoder_layers[-1]-
             # The "pooler" converts the encoded sequence tensor of shape
             # [batch_size, seq_length, hidden_size] to a tensor of shape
             # [batch_size, hidden_size]. This is necessary for segment-level
@@ -799,7 +803,7 @@ def transformer_model(input_tensor,
     Raises:
       ValueError: A Tensor shape or parameter is invalid.
     """
-    if hidden_size % num_attention_heads != 0:
+    if hidden_size % num_attention_heads != 0: #一头64   12头*一头64维=768维
         raise ValueError(
             "The hidden size (%d) is not a multiple of the number of attention "
             "heads (%d)" % (hidden_size, num_attention_heads))
