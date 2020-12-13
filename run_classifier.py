@@ -203,7 +203,8 @@ class DataProcessor(object):
         lines.append(line)
       return lines
 
-
+# NLI，也就是文本蕴涵，是自然语言理解(NLU)中的一项重要的基准任务，
+# 该任务是为了判断两句话之间的关系是否是蕴含（entailment）、矛盾（contradiction）和中立（neutral）三种中的一种。
 class XnliProcessor(DataProcessor):
   """Processor for the XNLI data set."""
 
@@ -252,6 +253,10 @@ class XnliProcessor(DataProcessor):
     return ["contradiction", "entailment", "neutral"]
 
 
+# MNLI-m
+# 语型内匹配。推断两个句子是意思相近, 矛盾, 还是无关的
+# MNLI-mm
+# 跨语型匹配。推断两个句子是意思相近, 矛盾, 还是无关的
 class MnliProcessor(DataProcessor):
   """Processor for the MultiNLI data set (GLUE version)."""
 
@@ -293,6 +298,7 @@ class MnliProcessor(DataProcessor):
     return examples
 
 
+# 句对分类  句子对来源于对同一条新闻的评论. 判断这一对句子在语义上是否相同.
 class MrpcProcessor(DataProcessor):
   """Processor for the MRPC data set (GLUE version)."""
 
@@ -332,7 +338,7 @@ class MrpcProcessor(DataProcessor):
           InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
     return examples
 
-
+# 单句的二分类问题, 判断一个英文句子在语法上是不是可接受的.
 class ColaProcessor(DataProcessor):
   """Processor for the CoLA data set (GLUE version)."""
 
