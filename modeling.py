@@ -824,6 +824,7 @@ def transformer_model(input_tensor,
     # forth from a 3D tensor to a 2D tensor. Re-shapes are normally free on
     # the GPU/CPU but may not be free on the TPU, so we want to minimize them to
     # help the optimizer.
+    # reshape成[batch_size*seq_length,input_width]两维
     prev_output = reshape_to_matrix(input_tensor)
 
     all_layer_outputs = []
@@ -833,7 +834,7 @@ def transformer_model(input_tensor,
 
             with tf.variable_scope("attention"):
                 attention_heads = []
-                with tf.variable_scope("self"):
+                with tf.variable_scope("self"):-
                     attention_head = attention_layer(
                         from_tensor=layer_input,
                         to_tensor=layer_input,
@@ -854,6 +855,7 @@ def transformer_model(input_tensor,
                 else:
                     # In the case where we have other sequences, we just concatenate
                     # them to the self-attention head before the projection.
+                    # 在最后一维连接12头 会得到12*64 = 768维
                     attention_output = tf.concat(attention_heads, axis=-1)
 
                 # Run a linear projection of `hidden_size` then add a residual
