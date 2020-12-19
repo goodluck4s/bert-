@@ -219,7 +219,7 @@ class BertModel(object):
                     initializer_range=config.initializer_range,
                     do_return_all_layers=True)
 
-            self.sequence_output = self.all_encoder_layers[-1]-
+            self.sequence_output = self.all_encoder_layers[-1]
             # The "pooler" converts the encoded sequence tensor of shape
             # [batch_size, seq_length, hidden_size] to a tensor of shape
             # [batch_size, hidden_size]. This is necessary for segment-level
@@ -569,7 +569,7 @@ def attention_layer(from_tensor,
                     value_act=None,
                     attention_probs_dropout_prob=0.0,
                     initializer_range=0.02,
-                    do_return_2d_tensor=False,
+                    do_return_2d_tensor=False,   #  调用时  这里是 do_return_2d_tensor=True
                     batch_size=None,
                     from_seq_length=None,
                     to_seq_length=None):
@@ -834,13 +834,14 @@ def transformer_model(input_tensor,
 
             with tf.variable_scope("attention"):
                 attention_heads = []
-                with tf.variable_scope("self"):-
+                with tf.variable_scope("self"):
+                    # 返回 [B*F, N*H]  因为do_return_2d_tensor=True
                     attention_head = attention_layer(
                         from_tensor=layer_input,
                         to_tensor=layer_input,
                         attention_mask=attention_mask,
                         num_attention_heads=num_attention_heads,
-                        size_per_head=attention_head_size,
+                        size_per_head=attention_head_size,   # 64
                         attention_probs_dropout_prob=attention_probs_dropout_prob,
                         initializer_range=initializer_range,
                         do_return_2d_tensor=True,
@@ -853,9 +854,9 @@ def transformer_model(input_tensor,
                 if len(attention_heads) == 1:
                     attention_output = attention_heads[0]
                 else:
+                    tf.print("len(attention_heads)>0 走的是 attention_output = tf.concat(attention_heads, axis=-1)")
                     # In the case where we have other sequences, we just concatenate
                     # them to the self-attention head before the projection.
-                    # 在最后一维连接12头 会得到12*64 = 768维
                     attention_output = tf.concat(attention_heads, axis=-1)
 
                 # Run a linear projection of `hidden_size` then add a residual
