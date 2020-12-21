@@ -180,6 +180,13 @@ def create_training_instances(input_files, tokenizer, max_seq_length,
                               dupe_factor, short_seq_prob, masked_lm_prob,
                               max_predictions_per_seq, rng):
   """Create `TrainingInstance`s from raw text."""
+
+  # 调用
+  # instances = create_training_instances(
+  #   input_files, tokenizer, FLAGS.max_seq_length, FLAGS.dupe_factor,
+  #   FLAGS.short_seq_prob, FLAGS.masked_lm_prob, FLAGS.max_predictions_per_seq,
+  #   rng)
+
   all_documents = [[]]
 
   # Input file format:
@@ -188,6 +195,7 @@ def create_training_instances(input_files, tokenizer, max_seq_length,
   # sentence boundaries for the "next sentence prediction" task).
   # (2) Blank lines between documents. Document boundaries are needed so
   # that the "next sentence prediction" task doesn't span between documents.
+  # 空行前后是不同的文章，每个文章中的每句话都占一行
   for input_file in input_files:
     with tf.gfile.GFile(input_file, "r") as reader:
       while True:
@@ -209,7 +217,7 @@ def create_training_instances(input_files, tokenizer, max_seq_length,
 
   vocab_words = list(tokenizer.vocab.keys())
   instances = []
-  for _ in range(dupe_factor):
+  for _ in range(dupe_factor):  # dupe_factor：对文档多次重复随机产生训练集，随机的次数
     for document_index in range(len(all_documents)):
       instances.extend(
           create_instances_from_document(
@@ -224,6 +232,7 @@ def create_instances_from_document(
     all_documents, document_index, max_seq_length, short_seq_prob,
     masked_lm_prob, max_predictions_per_seq, vocab_words, rng):
   """Creates `TrainingInstance`s for a single document."""
+
   document = all_documents[document_index]
 
   # Account for [CLS], [SEP], [SEP]

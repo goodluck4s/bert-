@@ -240,6 +240,13 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
 def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
                          label_ids, label_weights):
   """Get loss and log probs for the masked LM."""
+
+  # 调用部分代码
+  # (masked_lm_loss,
+  #  masked_lm_example_loss, masked_lm_log_probs) = get_masked_lm_output(
+  #     bert_config, model.get_sequence_output(), model.get_embedding_table(),
+  #     masked_lm_positions, masked_lm_ids, masked_lm_weights)
+
   input_tensor = gather_indexes(input_tensor, positions)
 
   with tf.variable_scope("cls/predictions"):
@@ -307,6 +314,8 @@ def get_next_sentence_output(bert_config, input_tensor, labels):
 
 def gather_indexes(sequence_tensor, positions):
   """Gathers the vectors at the specific positions over a minibatch."""
+  # sequence_tensor 是modeling的sequence_output  [batch_size, seq_length, hidden_size]
+  # positions  是  masked_lm_positions
   sequence_shape = modeling.get_shape_list(sequence_tensor, expected_rank=3)
   batch_size = sequence_shape[0]
   seq_length = sequence_shape[1]
