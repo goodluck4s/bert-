@@ -236,21 +236,22 @@ def create_instances_from_document(
   document = all_documents[document_index]
 
   # Account for [CLS], [SEP], [SEP]
-  max_num_tokens = max_seq_length - 3
+  max_num_tokens = max_seq_length - 3  # 假设max_seq_length = 128
 
   # We *usually* want to fill up the entire sequence since we are padding
   # to `max_seq_length` anyways, so short sequences are generally wasted
   # computation. However, we *sometimes*
   # (i.e., short_seq_prob == 0.1 == 10% of the time) want to use shorter
   # sequences to minimize the mismatch between pre-training and fine-tuning.
-  # The `target_seq_length` is just a rough target however, whereas
+  # The `target_seq_length` is just a rough粗糙的 target however, whereas然而
   # `max_seq_length` is a hard limit.
   target_seq_length = max_num_tokens
-  if rng.random() < short_seq_prob:
+  if rng.random() < short_seq_prob:  # short_seq_prob：为了缩小预训练和微调过程的差距，以此概率产生小于max_seq_length的训练数据
+    # 截断 target_seq_length 至2到125之间的一个数
     target_seq_length = rng.randint(2, max_num_tokens)
 
   # We DON'T just concatenate all of the tokens from a document into a long
-  # sequence and choose an arbitrary split point because this would make the
+  # sequence and choose an arbitrary任意的 split point because this would make the
   # next sentence prediction task too easy. Instead, we split the input into
   # segments "A" and "B" based on the actual "sentences" provided by the user
   # input.
