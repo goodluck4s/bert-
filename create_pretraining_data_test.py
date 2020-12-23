@@ -217,7 +217,7 @@ def create_training_instances(input_files, tokenizer, max_seq_length,
 
   vocab_words = list(tokenizer.vocab.keys())
   instances = []
-  for _ in range(dupe_factor):  # dupe_factor：对文档多次重复随机产生训练集，随机的次数
+  for _ in range(dupe_factor):  # dupe_factor：对文档多次重复随机产生训练集，随机的次数 dupe_factor=20
     for document_index in range(len(all_documents)):
       instances.extend(
           create_instances_from_document(
@@ -282,8 +282,8 @@ def create_instances_from_document(
           is_random_next = True
           target_b_length = target_seq_length - len(tokens_a)
 
-          # This should rarely go for more than one iteration for large
-          # corpora. However, just to be careful, we try to make sure that
+          # This should rarely很少罕见 go for more than one iteration for large
+          # corpora语料库的复数形式. However, just to be careful, we try to make sure that
           # the random document is not the same as the document
           # we're processing.
           for _ in range(10):
@@ -298,7 +298,7 @@ def create_instances_from_document(
             if len(tokens_b) >= target_b_length:
               break
           # We didn't actually use these segments so we "put them back" so
-          # they don't go to waste.
+          # they don't go to waste. 没用的A部分句子们 放回去 不浪费训练语料
           num_unused_segments = len(current_chunk) - a_end
           i -= num_unused_segments
         # Actual next
